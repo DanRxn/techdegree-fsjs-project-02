@@ -29,19 +29,42 @@ const resultsPerPage = 10;
 	// ✅ Select list of students and set as constant
 const students = $('.student-item');
 
-	// ◻️ Calculate number of pages needed, based on number of students, and set as constant
+const countOfStudents = $(students).length;
+
+	// ✅ Calculate number of pages needed, based on number of students, and set as constant
 
 const getNumberOfPages = () => {
-	const countOfStudents = $(students).length;
 
 	numberOfPages = Math.ceil( countOfStudents / resultsPerPage );
-	return numberOfPages;
-	
+	return numberOfPages;	
 }
 
-	// On page load
+const pageCount = getNumberOfPages();
 
-		// ◻️ Show links for the correct number of pages
+// Show students for a given page number
+
+const studentsFromPageNumber = (pageNumber) => {
+	// get upper and lower bounds of indexes for students to show
+	var firstStudent = (pageNumber - 1) * resultsPerPage + 1;
+	var lastStudent = ( pageNumber * resultsPerPage );
+
+	// show students in page's range
+
+	for (s = 1; s <= countOfStudents; s++) {
+		var thisStudent = $('.student-item').get(s-1);
+		console.log(thisStudent + ' is thisStudent inside the function!');
+
+		if (firstStudent <= s && s <= lastStudent) {
+			$(thisStudent).css('display', 'true');
+		} else {
+			$(thisStudent).css('display', 'none');
+		}
+	}
+}
+
+	// ✅ On page load
+
+		// ✅ Show links for the correct number of pages
 
 $('.page').append(
 `<!-- pagination HTML to create dynamically -->
@@ -52,20 +75,21 @@ $('.page').append(
       <!-- end pagination -->`
 	);
 
-// Below isn't working.  I *think* it has to do with the getNumberOfPages() function not being used right. 
+for ( p = 1; p <= pageCount; p++ ) {
+	$('.pagination ul').append(
+	  `<li>
+            <a href="#">` + p + `</a>
+          </li>`
+	);
+}
 
-// for ( p = 1, p <= getNumberOfPages(), p++) {
-// 	$('.pagination ul').append(
-// 	  `<li>
-//             <a href="#">` + p + `</a>
-//           </li>`
-// 	);
-// }
+		// ✅ Style the link for first page as the current page; and
+ 
+ $('.pagination ul li:nth-child(1) a').addClass("active");
 
-		// ◻️ Hide all but the first page of results; and
+		// ✅ Hide all but the first page of results
 
-
-		// ◻️ Style the link for first page as the current page
+studentsFromPageNumber(1);
 
 
 
