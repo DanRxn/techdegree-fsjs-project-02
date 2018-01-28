@@ -8,11 +8,9 @@
         // Select list of students and set as $constant
   const $allStudents = $('.student-item');
   const countOfAllStudents = $allStudents.length;
-  const $students = $('.student-item:visible');
+  let $students = $('.student-item:visible');
         // Get count of students and set as constant
-  const countOfStudents = $students.length;
-        // Get count of pages needed based on count of countOfStudents and studentsPerPage
-  const pageCount = (countOfStudents > studentsPerPage) ? Math.ceil(countOfStudents/studentsPerPage) : 1;
+  let countOfStudents = $students.length;
   // ## Script functions
         // Style page links based on the active page 
   const styleLinksForPage = (pageNumber) => {
@@ -28,11 +26,11 @@
         // Show correct students for the given page number
   const filterStudentsForPage = (pageNumber) => {
           // * get upper and lower bounds of indexes for students to show
-    var firstStudent = (pageNumber - 1) * studentsPerPage + 1;
-    var lastStudent = ( pageNumber * studentsPerPage );
+    let firstStudent = (pageNumber - 1) * studentsPerPage + 1;
+    let lastStudent = ( pageNumber * studentsPerPage );
           // * show students in page's range
     for (s = 1; s <= countOfStudents; s++) {
-      var thisStudent = $students.get(s-1);
+      let thisStudent = $students.get(s-1);
       if (firstStudent <= s && s <= lastStudent) {
         $(thisStudent).css('display', 'block');
       } else {
@@ -42,6 +40,8 @@
   }
   //	## Changes on initial page load
   const createPageLinks = () => {
+      // Get count of pages needed based on count of countOfStudents and studentsPerPage
+    const pageCount = (countOfStudents > studentsPerPage) ? Math.ceil(countOfStudents/studentsPerPage) : 1;
       // * add pagination div and links for the correct number of pages to footer
     $('.page').append(
     `<!-- pagination HTML created dynamically -->
@@ -65,8 +65,8 @@
             $('.page-header').append(
             `<!-- student search HTML added dynamically -->
                   <div class="student-search">
-                  <input placeholder="Search for students...">
-                  <button>Search</button>
+                  <input type="text" name="search" placeholder="Search for students...">
+                  <button type="submit">Search</button>
                   </div>
             <!-- end search -->`
       );
@@ -86,7 +86,7 @@
             //	## On click of a pagination link
             $('.pagination').on("click", '.page-link',  function (e) {
                   // * get page number of the clicked link
-                  var nextPage = parseInt(+( $(this).text() ));
+                  let nextPage = parseInt(+( $(this).text() ));
                         // * style the links based on the clicked link
                   styleLinksForPage(nextPage);
                         // * filter the student list based on the clicked link
@@ -97,14 +97,20 @@
   const search = () => {
       removePageLinks();
       for (s = 0; s < countOfAllStudents; s++) {
-            var thisStudent = $allStudents.get(s);
-            if ($(thisStudent).html().includes($('.student-search input').val())) {
+            let thisStudent = $allStudents.get(s);
+            let thisStudentName = $(thisStudent).find('h3').html();
+            let thisStudentEmail = $(thisStudent).find('.email').html();
+            const thisQuery = $('.student-search input').val();
+            if (thisStudentName.includes(thisQuery) || thisStudentEmail.includes(thisQuery)) {
               $(thisStudent).css('display', 'block');
             } else {
               $(thisStudent).css('display', 'none');
             }
       }
-      // paginate();
+      $students = $('.student-item:visible');
+        // Get count of students and set as constant
+      countOfStudents = $students.length;
+      paginate();
   }
   const setupPage = () => {
       createSearchUi();
@@ -116,6 +122,15 @@
   $('.student-search button').on('click', function () {
         search()
   });
+
+  // Allow the Enter key (key code 13) to act as the Search button 
+  $('.student-search').keypress(function(e) {
+      let key = e.which;
+      if (key == 13) {
+        $('.student-search button').click();
+      }
+  });
+
 
 
   // // ## Close wrapper script
